@@ -1,0 +1,7 @@
+config.json
+*.ipynb
+*.csv
+venv/
+.idea/
+*.pyc
+*.DS_Store
