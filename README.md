@@ -8,7 +8,7 @@ from datetime import datetime
 
 hotel_id_list = [ ...list of hotel ids... ] 
 
-dt_string = now.strftime("%Y-%d-%m_%H-%M-%S")
+dt_string = datetime.now().strftime("%Y-%d-%m_%H-%M-%S")
 
 get_nyc_go_hotels_data(
     hotel_id_list, 
