@@ -1,2 +1,2 @@
-# get_nyc_hotels
+# Get NYC Hotels Data
 Repo for extracting NYC hotel data from NYC Go
