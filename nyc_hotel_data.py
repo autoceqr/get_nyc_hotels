@@ -49,3 +49,36 @@ def google_sheet_to_dataframe(url):
     r = requests.get(url)
     data = r.content
     return pd.read_csv(BytesIO(data))
+
+
+def get_osm_data(
+        query,
+        radius_meters,
+        latitude,
+        longitude,
+        output_csv,
+):
+    overpass_url = "http://overpass-api.de/api/interpreter"
+    overpass_query = """
+    [out:json];
+    ({}(around:{},{},{});
+    );
+    out center;
+    """.format(query, radius_meters, latitude, longitude)
+
+    response = requests.get(
+        overpass_url,
+        params={'data': overpass_query}
+    )
+
+    data = response.json()
+
+    df = pd.DataFrame(data['elements'])
+
+    pd.concat(
+        [
+            df.drop(['tags'], axis=1),
+            df['tags'].apply(pd.Series)
+        ],
+        axis=1,
+    ).to_csv(output_csv, index=False)
