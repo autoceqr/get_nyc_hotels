@@ -82,3 +82,44 @@ def get_osm_data(
         ],
         axis=1,
     ).to_csv(output_csv, index=False)
+
+
+def get_google_data(
+        api_key,
+        search_text,
+        latitude,
+        longitude,
+        response_data,
+        output_csv,
+):
+    response = requests.get(
+        "{}json?input={}{}{}&location={},{}&rankby=distance&key={}".format(
+            'https://maps.googleapis.com/maps/api/place/textsearch/',
+            search_text,
+            '&inputtype=textquery&fields=',
+            response_data,
+            latitude,
+            longitude,
+            api_key,
+        )
+    )
+
+    df = pd.DataFrame(response.json()['results'])
+
+    df_1 = pd.concat(
+        [
+            df.drop(['geometry'], axis=1),
+            df['geometry'].apply(pd.Series),
+        ],
+        axis=1,
+    )
+
+    df_2 = pd.concat(
+        [
+            df_1.drop(['location'], axis=1),
+            df_1['location'].apply(pd.Series),
+        ],
+        axis=1,
+    )  # bad to do twice. should be function, please push back on code review
+
+    df_2.to_csv(output_csv, index=False)
