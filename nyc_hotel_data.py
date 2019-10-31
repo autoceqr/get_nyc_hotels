@@ -71,9 +71,7 @@ def get_osm_overpass_data(
         params={'data': overpass_query}
     )
 
-    data = response.json()
-
-    df = pd.DataFrame(data['elements'])
+    df = pd.DataFrame(response.json()['elements'])
 
     pd.concat(
         [
@@ -92,6 +90,7 @@ def get_gmaps_search_data(
         response_data,
         output_csv,
 ):
+
     response = requests.get(
         "{}json?input={}{}{}&location={},{}&rankby=distance&key={}".format(
             'https://maps.googleapis.com/maps/api/place/textsearch/',
@@ -104,22 +103,16 @@ def get_gmaps_search_data(
         )
     )
 
-    df = pd.DataFrame(response.json()['results'])
+    data = response.json()
+    df = pd.DataFrame(data['results'])
 
-    df_1 = pd.concat(
+    geometry = df['geometry'].apply(pd.Series)
+
+    pd.concat(
         [
             df.drop(['geometry'], axis=1),
-            df['geometry'].apply(pd.Series),
+            geometry['location'].apply(pd.Series),
+            geometry.drop(['location'], axis=1),
         ],
         axis=1,
-    )
-
-    df_2 = pd.concat(  # call this out in code review, this should be function.
-        [
-            df_1.drop(['location'], axis=1),
-            df_1['location'].apply(pd.Series),
-        ],
-        axis=1,
-    )  # bad to do twice. should be function, please push back on code review
-
-    df_2.to_csv(output_csv, index=False)
+    ).to_csv(output_csv, index=False)
