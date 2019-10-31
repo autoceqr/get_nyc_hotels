@@ -51,7 +51,7 @@ def google_sheet_to_dataframe(url):
     return pd.read_csv(BytesIO(data))
 
 
-def get_osm_data(
+def get_osm_overpass_data(
         query,
         radius_meters,
         latitude,
@@ -60,10 +60,10 @@ def get_osm_data(
 ):
     overpass_url = "http://overpass-api.de/api/interpreter"
     overpass_query = """
-    [out:json];
-    ({}(around:{},{},{});
-    );
-    out center;
+        [out:json];
+        ({}(around:{},{},{});
+        );
+        out center;
     """.format(query, radius_meters, latitude, longitude)
 
     response = requests.get(
@@ -84,7 +84,7 @@ def get_osm_data(
     ).to_csv(output_csv, index=False)
 
 
-def get_google_data(
+def get_gmaps_search_data(
         api_key,
         search_text,
         latitude,
@@ -114,7 +114,7 @@ def get_google_data(
         axis=1,
     )
 
-    df_2 = pd.concat(
+    df_2 = pd.concat(  # call this out in code review, this should be function.
         [
             df_1.drop(['location'], axis=1),
             df_1['location'].apply(pd.Series),
